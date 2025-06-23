@@ -1,3 +1,4 @@
+import asyncio
 import json
 import os
 from pathlib import Path
@@ -786,21 +787,6 @@ async def solution(update: Update, context: ContextTypes.DEFAULT_TYPE):
     user = update.message.from_user
     current_language = context.user_data.get("language", DEFAULT_LANGUAGE)
 
-    keyboard = [
-        [
-            InlineKeyboardButton(
-                LANG_TEXTS[current_language]["solve_over"], callback_data="solve"
-            )
-        ],
-        [
-            InlineKeyboardButton(
-                LANG_TEXTS[current_language]["menu"], callback_data="menu"
-            )
-        ],
-    ]
-
-    new_reply_markup = InlineKeyboardMarkup(keyboard)
-
     processing_message = await update.message.reply_text(
         LANG_TEXTS[current_language]["processing"]
     )
@@ -818,85 +804,94 @@ async def solution(update: Update, context: ContextTypes.DEFAULT_TYPE):
             step_size=context.user_data["step_size"],
         )
     except Exception as e:
-        logger.error("Error while setting Java parameters: %s", e)
+        logger.error("Error while setting parameters: %s", e)
         await save_user_settings(context)
         await processing_message.edit_text(
             LANG_TEXTS[current_language]["server_error"]
             + " "
             + LANG_TEXTS[current_language]["try_again"],
-            reply_markup=new_reply_markup,
+            reply_markup=get_reply_markup(current_language),
         )
         return MENU
 
-    is_completed = await wait_for_application_completion(application_id)
-
-    if not is_completed:
-        logger.error("Application %s did not complete successfully", application_id)
-        await save_user_settings(context)
-        await processing_message.edit_text(
-            LANG_TEXTS[current_language]["processing_error"]
-            + " "
-            + LANG_TEXTS[current_language]["try_again"],
-            reply_markup=new_reply_markup,
+    asyncio.create_task(
+        handle_solution_completion(
+            application_id, context, processing_message, current_language
         )
-        return MENU
+    )
 
-    results = await get_results(application_id)
+    return MENU
 
+
+async def handle_solution_completion(application_id, context, message, lang):
     try:
+        is_completed = await wait_for_application_completion(application_id)
+
+        if not is_completed:
+            await message.edit_text(
+                LANG_TEXTS[lang]["processing_error"]
+                + " "
+                + LANG_TEXTS[lang]["try_again"],
+                reply_markup=get_reply_markup(lang),
+            )
+            return
+
+        results = await get_results(application_id)
         data = json.loads(results[0].get("data", "{}"))
+
         x_values = data.get("xvalues", [])
         y_values = data.get("yvalues", [])
         solution = data.get("solution", "")
-    except Exception:
-        logger.error("Error while getting solution for application %s", application_id)
-        await save_user_settings(context)
-        await processing_message.edit_text(
-            LANG_TEXTS[current_language]["server_error"]
-            + " "
-            + LANG_TEXTS[current_language]["try_again"],
-            reply_markup=new_reply_markup,
+
+        if not solution:
+            await message.edit_text(
+                LANG_TEXTS[lang]["data_error"] + " " + LANG_TEXTS[lang]["try_again"],
+                reply_markup=get_reply_markup(lang),
+            )
+            return
+
+        plot_graph = plot_solution(x_values, y_values, context.user_data["order"])
+        print_result = print_solution(
+            solution, context.user_data["order"], context.user_data["rounding"]
         )
-        return MENU
 
-    if solution is None:
-        logger.info("User %s used unsupported symbols", user.id)
+        try:
+            await message.edit_media(
+                media=InputMediaPhoto(plot_graph, caption=print_result),
+                reply_markup=get_reply_markup(lang),
+                write_timeout=60,
+                pool_timeout=30,
+            )
+        except telegram.error.TimedOut:
+            await message.edit_text(print_result, reply_markup=get_reply_markup(lang))
+        finally:
+            plot_graph.close()
+
         await save_user_settings(context)
-        await processing_message.edit_text(
-            LANG_TEXTS[current_language]["data_error"]
-            + " "
-            + LANG_TEXTS[current_language]["try_again"],
-            reply_markup=new_reply_markup,
+
+    except Exception as e:
+        logger.error("Unexpected error in background completion task: %s", e)
+        await message.edit_text(
+            LANG_TEXTS[lang]["server_error"] + " " + LANG_TEXTS[lang]["try_again"],
+            reply_markup=get_reply_markup(lang),
         )
-        return MENU
 
-    plot_graph = plot_solution(x_values, y_values, context.user_data["order"])
 
-    print_result = print_solution(
-        solution, context.user_data["order"], context.user_data["rounding"]
+def get_reply_markup(language):
+    return InlineKeyboardMarkup(
+        [
+            [
+                InlineKeyboardButton(
+                    LANG_TEXTS[language]["solve_over"], callback_data="solve"
+                )
+            ],
+            [
+                InlineKeyboardButton(
+                    LANG_TEXTS[language]["menu"], callback_data="menu"
+                )
+            ],
+        ]
     )
-
-    logger.info("Result of %s: %s", user.id, print_result)
-
-    try:
-        await processing_message.edit_media(
-            media=InputMediaPhoto(plot_graph, caption=print_result),
-            reply_markup=new_reply_markup,
-            write_timeout=60,
-            pool_timeout=30,
-        )
-    except telegram.error.TimedOut:
-        logger.warning(
-            "Timeout while sending media for user %s, falling back to text only",
-            user.id,
-        )
-        await processing_message.edit_text(print_result, reply_markup=new_reply_markup)
-    finally:
-        plot_graph.close()
-
-    await save_user_settings(context)
-
-    return MENU
 
 
 async def cancel(update: Update, context: ContextTypes.DEFAULT_TYPE):
