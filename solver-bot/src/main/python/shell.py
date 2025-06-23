@@ -1,22 +1,22 @@
 import json
 import os
-import telegram
 from pathlib import Path
 
+import telegram
+from equation.equation_parser import format_equation
+from equation.equation_validator import validate_parentheses, validate_symbols
 from logger import logger
 from plotting.plotter import plot_solution
 from printing.printer import print_solution
 from spring_client import (
-    set_parameters,
-    set_user_settings,
-    get_user_settings,
     get_recent_applications,
     get_results,
+    get_user_settings,
+    set_parameters,
+    set_user_settings,
     wait_for_application_completion,
 )
-from equation.equation_parser import format_equation
-from equation.equation_validator import validate_symbols, validate_parentheses
-from telegram import Update, InlineKeyboardButton, InlineKeyboardMarkup, InputMediaPhoto
+from telegram import InlineKeyboardButton, InlineKeyboardMarkup, InputMediaPhoto, Update
 from telegram.ext import (
     Application,
     CallbackQueryHandler,
