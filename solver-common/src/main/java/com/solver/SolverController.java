@@ -24,7 +24,7 @@ public class SolverController {
 
     @PostMapping("/users/{userId}/settings")
     public CompletableFuture<ResponseEntity<String>> setUserSettings(
-            @PathVariable("userId") Integer userId,
+            @PathVariable("userId") Long userId,
             @RequestParam("method") String method,
             @RequestParam("rounding") Integer rounding,
             @RequestParam("language") String language,
@@ -38,7 +38,7 @@ public class SolverController {
 
     @PostMapping("/users/{userId}/solve")
     public CompletableFuture<ResponseEntity<Integer>> solve(
-            @PathVariable("userId") Integer userId,
+            @PathVariable("userId") Long userId,
             @RequestBody SolverRequest request) {
         logger.debug("Received solve request with userId: {}", userId);
         return CompletableFuture.supplyAsync(() -> {
@@ -93,7 +93,7 @@ public class SolverController {
     }
 
     @GetMapping("/users/{userId}/settings")
-    public CompletableFuture<ResponseEntity<String>> getUserSettings(@PathVariable("userId") Integer userId) {
+    public CompletableFuture<ResponseEntity<String>> getUserSettings(@PathVariable("userId") Long userId) {
         logger.debug("Getting user settings for userId: {}", userId);
         return dbService.getUserSettings(userId)
                 .thenApply(optionalSettings -> optionalSettings
@@ -102,7 +102,7 @@ public class SolverController {
     }
 
     @GetMapping("/users/{userId}/applications")
-    public CompletableFuture<ResponseEntity<List<Map<String, Object>>>> getApplications(@PathVariable("userId") Integer userId) {
+    public CompletableFuture<ResponseEntity<List<Map<String, Object>>>> getApplications(@PathVariable("userId") Long userId) {
         logger.debug("Getting applications list for userId: {}", userId);
         return dbService.getApplications(userId)
                 .thenApply(applications -> {

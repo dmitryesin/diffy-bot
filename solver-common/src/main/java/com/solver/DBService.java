@@ -28,7 +28,7 @@ public class DBService {
 
     @Async
     @Transactional
-    public CompletableFuture<Optional<String>> getUserSettings(Integer userId) {
+    public CompletableFuture<Optional<String>> getUserSettings(Long userId) {
         logger.debug("Fetching user settings for userId: {}", userId);
         return CompletableFuture.supplyAsync(() -> {
             String query = """
@@ -63,7 +63,7 @@ public class DBService {
 
     @Async
     @Transactional
-    public CompletableFuture<Optional<String>> setUserSettings(Integer userId, String method, Integer rounding, String language, Boolean hints) {
+    public CompletableFuture<Optional<String>> setUserSettings(Long userId, String method, Integer rounding, String language, Boolean hints) {
         logger.debug("Setting user settings for userId: {}, method: {}, rounding: {}, language: {}, hints: {}", 
             userId, method, rounding, language, hints);
         return CompletableFuture.supplyAsync(() -> {
@@ -91,7 +91,7 @@ public class DBService {
 
     @Async
     @Transactional
-    public CompletableFuture<Integer> createApplication(String parameters, String status, Integer userId) {
+    public CompletableFuture<Integer> createApplication(String parameters, String status, Long userId) {
         logger.debug("Creating new application for userId: {} with status: {}", userId, status);
         return CompletableFuture.supplyAsync(() -> {
             String query = """
@@ -116,7 +116,7 @@ public class DBService {
 
     @Async
     @Transactional
-    public CompletableFuture<List<Map<String, Object>>> getApplications(Integer userId) {
+    public CompletableFuture<List<Map<String, Object>>> getApplications(Long userId) {
         logger.debug("Fetching applications for userId: {}", userId);
         return CompletableFuture.supplyAsync(() -> {
             String query = """
