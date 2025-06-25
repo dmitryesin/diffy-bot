@@ -810,12 +810,12 @@ async def solution(update: Update, context: ContextTypes.DEFAULT_TYPE):
             LANG_TEXTS[current_language]["server_error"]
             + " "
             + LANG_TEXTS[current_language]["try_again"],
-            reply_markup=get_reply_markup(current_language),
+            reply_markup=solution_markup(current_language),
         )
         return MENU
 
     asyncio.create_task(
-        handle_solution_completion(
+        solution_completion_handle(
             application_id, context, processing_message, current_language
         )
     )
@@ -823,7 +823,7 @@ async def solution(update: Update, context: ContextTypes.DEFAULT_TYPE):
     return MENU
 
 
-async def handle_solution_completion(application_id, context, message, lang):
+async def solution_completion_handle(application_id, context, message, lang):
     try:
         is_completed = await wait_for_application_completion(application_id)
 
@@ -832,11 +832,19 @@ async def handle_solution_completion(application_id, context, message, lang):
                 LANG_TEXTS[lang]["processing_error"]
                 + " "
                 + LANG_TEXTS[lang]["try_again"],
-                reply_markup=get_reply_markup(lang),
+                reply_markup=solution_markup(lang),
             )
             return
 
         results = await get_results(application_id)
+
+        if not results:
+            await message.edit_text(
+                LANG_TEXTS[lang]["data_error"] + " " + LANG_TEXTS[lang]["try_again"],
+                reply_markup=solution_markup(lang),
+            )
+            return
+
         data = json.loads(results[0].get("data", "{}"))
 
         x_values = data.get("xvalues", [])
@@ -846,7 +854,7 @@ async def handle_solution_completion(application_id, context, message, lang):
         if not solution:
             await message.edit_text(
                 LANG_TEXTS[lang]["data_error"] + " " + LANG_TEXTS[lang]["try_again"],
-                reply_markup=get_reply_markup(lang),
+                reply_markup=solution_markup(lang),
             )
             return
 
@@ -858,12 +866,12 @@ async def handle_solution_completion(application_id, context, message, lang):
         try:
             await message.edit_media(
                 media=InputMediaPhoto(plot_graph, caption=print_result),
-                reply_markup=get_reply_markup(lang),
+                reply_markup=solution_markup(lang),
                 write_timeout=60,
                 pool_timeout=30,
             )
         except telegram.error.TimedOut:
-            await message.edit_text(print_result, reply_markup=get_reply_markup(lang))
+            await message.edit_text(print_result, reply_markup=solution_markup(lang))
         finally:
             plot_graph.close()
 
@@ -873,11 +881,11 @@ async def handle_solution_completion(application_id, context, message, lang):
         logger.error("Unexpected error in background completion task: %s", e)
         await message.edit_text(
             LANG_TEXTS[lang]["server_error"] + " " + LANG_TEXTS[lang]["try_again"],
-            reply_markup=get_reply_markup(lang),
+            reply_markup=solution_markup(lang),
         )
 
 
-def get_reply_markup(language):
+def solution_markup(language):
     return InlineKeyboardMarkup(
         [
             [
@@ -885,11 +893,7 @@ def get_reply_markup(language):
                     LANG_TEXTS[language]["solve_over"], callback_data="solve"
                 )
             ],
-            [
-                InlineKeyboardButton(
-                    LANG_TEXTS[language]["menu"], callback_data="menu"
-                )
-            ],
+            [InlineKeyboardButton(LANG_TEXTS[language]["menu"], callback_data="menu")],
         ]
     )
 
