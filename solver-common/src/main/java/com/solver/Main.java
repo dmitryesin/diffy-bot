@@ -1,12 +1,9 @@
 package com.solver;
 
-import org.springframework.stereotype.Component;
-
 import java.util.List;
 import java.util.ArrayList;
 import java.util.function.BiFunction;
 
-@Component
 public class Main {
     private int order;
     private BiFunction<Double, double[], double[]> equationFunction;

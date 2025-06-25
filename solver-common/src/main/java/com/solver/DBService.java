@@ -146,7 +146,7 @@ public class DBService {
 
     @Async
     @Transactional
-    public CompletableFuture<List<Map<String, Object>>> getResults(Integer applicationId) {
+    public CompletableFuture<List<Map<String, Object>>> getResults(int applicationId) {
         logger.debug("Fetching results for applicationId: {}", applicationId);
         return CompletableFuture.supplyAsync(() -> {
             String query = """
