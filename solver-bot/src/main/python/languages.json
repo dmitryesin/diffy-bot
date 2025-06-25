@@ -42,7 +42,10 @@
         "invalid_initial_y_count1": "Invalid number of initial y values: ",
         "invalid_initial_y_count2": "Expected: ",
         "invalid_reach_point": "Invalid approximation point.",
+        "reach_point_equals_initial": "The approximation point must be different from the initial x value.",
         "invalid_step_size": "Invalid step size value.",
+        "too_many_points": "Too many calculation points: ",
+        "max_points_allowed": "Maximum allowed: ",
 
         "processing": "Processing your request...",
         "processing_longer": "It may take longer than usual to process your request. Please wait...",
@@ -113,7 +116,10 @@
         "invalid_initial_y_count1": "Некорректное количество начальных значений y: ",
         "invalid_initial_y_count2": "Ожидалось: ",
         "invalid_reach_point": "Некорректное значение точки аппроксимации.",
+        "reach_point_equals_initial": "Точка аппроксимации должна отличаться от начального значения x.",
         "invalid_step_size": "Некорректное значение размера шага.",
+        "too_many_points": "Слишком много точек для вычисления: ",
+        "max_points_allowed": "Максимально допустимо: ",
 
         "processing": "Обработка вашего запроса...",
         "processing_longer": "Обработка вашего запроса может занять больше времени, чем обычно. Пожалуйста, подождите...",
@@ -184,7 +190,10 @@
         "invalid_initial_y_count1": "初始y值数量无效：",
         "invalid_initial_y_count2": "应为：",
         "invalid_reach_point": "无效的近似点。",
+        "reach_point_equals_initial": "近似点必须与初始x值不同。",
         "invalid_step_size": "无效的步长值。",
+        "too_many_points": "计算点数过多：",
+        "max_points_allowed": "最大允许：",
 
         "processing": "正在处理您的请求...",
         "processing_longer": "处理时间可能较长，请稍候...",
