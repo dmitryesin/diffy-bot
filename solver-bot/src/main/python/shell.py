@@ -595,9 +595,8 @@ async def equation(update: Update, context: ContextTypes.DEFAULT_TYPE):
         logger.info("User %s used unsupported symbol: %s", user.id, error_message)
         await update.message.reply_text(
             LANG_TEXTS[current_language]["symbols_error"]
-            + f"<b><i>{error_message}</i></b>. "
+            + f"{error_message}. "
             + LANG_TEXTS[current_language]["try_again"],
-            parse_mode="HTML",
         )
         return EQUATION
 
@@ -699,9 +698,8 @@ async def initial_y(update: Update, context: ContextTypes.DEFAULT_TYPE):
         logger.info("Invalid initial y input by %s: %s", user.id, user_input)
         await update.message.reply_text(
             LANG_TEXTS[current_language]["invalid_initial_y"]
-            + f"<b><i>{invalid_value}</i></b>. "
+            + f"{invalid_value}. "
             + LANG_TEXTS[current_language]["try_again"],
-            parse_mode="HTML",
         )
         return INITIAL_Y
 
@@ -709,11 +707,10 @@ async def initial_y(update: Update, context: ContextTypes.DEFAULT_TYPE):
         logger.info("Invalid number of initial y values by %s: %s", user.id, user_input)
         await update.message.reply_text(
             LANG_TEXTS[current_language]["invalid_initial_y_count1"]
-            + f"<b><i>{len(splitted_user_input)}</i></b>. "
+            + f"{len(splitted_user_input)}. "
             + LANG_TEXTS[current_language]["invalid_initial_y_count2"]
-            + f"<b><i>{order}</i></b>. "
+            + f"{order}. "
             + LANG_TEXTS[current_language]["try_again"],
-            parse_mode="HTML",
         )
         return INITIAL_Y
 
