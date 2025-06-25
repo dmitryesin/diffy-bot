@@ -42,6 +42,8 @@ DEFAULT_ROUNDING = "4"
 DEFAULT_LANGUAGE = "en"
 DEFAULT_HINTS = "true"
 
+MAX_CALCULATION_POINTS = 100000
+
 
 async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
     if update.edited_message:
@@ -736,7 +738,7 @@ async def reach_point(update: Update, context: ContextTypes.DEFAULT_TYPE):
     current_language = context.user_data.get("language", DEFAULT_LANGUAGE)
 
     try:
-        float(user_input)
+        reach_point_value = float(user_input)
     except ValueError:
         logger.info("Invalid reach point input by %s: %s", user.id, user_input)
         await update.message.reply_text(
@@ -745,6 +747,19 @@ async def reach_point(update: Update, context: ContextTypes.DEFAULT_TYPE):
             + LANG_TEXTS[current_language]["try_again"]
         )
         return REACH_POINT
+
+    try:
+        initial_x_value = float(context.user_data["initial_x"])
+        if abs(reach_point_value - initial_x_value) < 1e-10:
+            logger.info("Reach point equals initial x for %s: %s", user.id, user_input)
+            await update.message.reply_text(
+                LANG_TEXTS[current_language]["reach_point_equals_initial"]
+                + " "
+                + LANG_TEXTS[current_language]["try_again"]
+            )
+            return REACH_POINT
+    except Exception as e:
+        logger.error("Error comparing reach point with initial x for %s: %s", user.id, e)
 
     logger.info("Reach point of %s: %s", user.id, user_input)
     context.user_data["reach_point"] = user_input
@@ -764,7 +779,7 @@ async def step_size(update: Update, context: ContextTypes.DEFAULT_TYPE):
     current_language = context.user_data.get("language", DEFAULT_LANGUAGE)
 
     try:
-        float(user_input)
+        step_value = float(user_input)
     except ValueError:
         logger.info("Invalid step size input by %s: %s", user.id, user_input)
         await update.message.reply_text(
@@ -773,6 +788,25 @@ async def step_size(update: Update, context: ContextTypes.DEFAULT_TYPE):
             + LANG_TEXTS[current_language]["try_again"]
         )
         return STEP_SIZE
+
+    try:
+        initial_x_value = float(context.user_data["initial_x"])
+        reach_point_value = float(context.user_data["reach_point"])
+        num_points = abs(reach_point_value - initial_x_value) / step_value
+        
+        if num_points > MAX_CALCULATION_POINTS:
+            logger.info("Too many calculation points for %s: %d", user.id, int(num_points))
+            await update.message.reply_text(
+                LANG_TEXTS[current_language]["too_many_points"]
+                + f"{int(num_points)}. "
+                + LANG_TEXTS[current_language]["max_points_allowed"]
+                + f"{MAX_CALCULATION_POINTS}. "
+                + LANG_TEXTS[current_language]["try_again"]
+            )
+            return STEP_SIZE
+            
+    except Exception as e:
+        logger.error("Error calculating number of points for %s: %s", user.id, e)
 
     logger.info("Step size of %s: %s", user.id, user_input)
     context.user_data["step_size"] = user_input
