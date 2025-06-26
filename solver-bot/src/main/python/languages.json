@@ -27,12 +27,14 @@
 
         "hints_text": "Hint:",
 
-        "hints_enter_equation": "For example: y' = x + y or y'' + sin(x). You can use variables x and y, arithmetic operators (+, -, *, /), and functions such as sin(x), exp(x), ln(x).",
-        "hints_enter_x": "The point at which you start solving. For example, if you want to solve the equation with the initial value y(0) = 1, enter 0.",
-        "hints_enter_y": "The initial value of the function y at the given x. For example, if you want to solve the equation with the initial value y(0) = 1, enter 1.",
-        "hints_enter_y_multiple": "Initial values of the function y at the given x values. For example, if you want to solve the equation with initial values y(0) = 1 and y(1) = 2, enter 1, 2 or 1 2.",
-        "hints_enter_reach_point": "Specifies up to which point you want to solve the equation. For example, if you want to solve the equation up to x = 10, enter 10.",
-        "hints_enter_step_size": "Affects the calculation accuracy. For example: if you want the step size to be 0.1, enter 0.1.",
+        "hints": {
+            "enter_equation": "For example: y' = x + y or y'' + sin(x). You can use variables x and y, arithmetic operators (+, -, *, /), and functions such as sin(x), exp(x), ln(x).",
+            "enter_x": "The point at which you start solving. For example, if you want to solve the equation with the initial value y(0) = 1, enter 0.",
+            "enter_y": "The initial value of the function y at the given x. For example, if you want to solve the equation with the initial value y(0) = 1, enter 1.",
+            "enter_y_multiple": "Initial values of the function y at the given x values. For example, if you want to solve the equation with initial values y(0) = 1 and y(1) = 2, enter 1, 2 or 1 2.",
+            "enter_reach_point": "Specifies up to which point you want to solve the equation. For example, if you want to solve the equation up to x = 10, enter 10.",
+            "enter_step_size": "Affects the calculation accuracy. For example: if you want the step size to be 0.1, enter 0.1."
+        },
 
         "equation_error": "The equation is incorrect.",
         "symbols_error": "The equation contains invalid symbols: ",
@@ -99,12 +101,14 @@
 
         "hints_text": "Подсказка:",
 
-        "hints_enter_equation": "Например: y' = x + y или y'' + sin(x). Можно использовать переменные x и y, арифметические знаки (+, -, *, /) и функции, такие как sin(x), exp(x), ln(x).",
-        "hints_enter_x": "Точка, в которой вы начинаете решение. Например, если вы хотите решить уравнение с начальным значением y(0) = 1, введите 0.",
-        "hints_enter_y": "Начальное значение функции y при заданном x. Например, если вы хотите решить уравнение с начальным значением y(0) = 1, введите 1.",
-        "hints_enter_y_multiple": "Начальные значения функции y при заданных x. Например, если вы хотите решить уравнение с начальными значениями y(0) = 1 и y(1) = 2, введите 1, 2 или 1 2.",
-        "hints_enter_reach_point": "Определяет, до какой точки вы хотите решить уравнение. Например, если вы хотите решить уравнение до x = 10, введите 10.",
-        "hints_enter_step_size": "Влияет на точность вычислений. Например: если вы хотите, чтобы шаг был 0.1, введите 0.1.",
+        "hints": {
+            "enter_equation": "Например: y' = x + y или y'' + sin(x). Можно использовать переменные x и y, арифметические знаки (+, -, *, /) и функции, такие как sin(x), exp(x), ln(x).",
+            "enter_x": "Точка, в которой вы начинаете решение. Например, если вы хотите решить уравнение с начальным значением y(0) = 1, введите 0.",
+            "enter_y": "Начальное значение функции y при заданном x. Например, если вы хотите решить уравнение с начальным значением y(0) = 1, введите 1.",
+            "enter_y_multiple": "Начальные значения функции y при заданных x. Например, если вы хотите решить уравнение с начальными значениями y(0) = 1 и y(1) = 2, введите 1, 2 или 1 2.",
+            "enter_reach_point": "Определяет, до какой точки вы хотите решить уравнение. Например, если вы хотите решить уравнение до x = 10, введите 10.",
+            "enter_step_size": "Влияет на точность вычислений. Например: если вы хотите, чтобы шаг был 0.1, введите 0.1."
+        },
 
         "equation_error": "Уравнение некорректно.",
         "symbols_error": "Уравнение содержит недопустимые символы: ",
@@ -171,12 +175,14 @@
 
         "hints_text": "提示：",
 
-        "hints_enter_equation": "例如：y' = x + y 或 y'' + sin(x)。您可以使用变量 x 和 y，算术运算符（+、-、*、/），以及 sin(x)、exp(x)、ln(x) 等函数。",
-        "hints_enter_x": "开始求解的点。例如，如果您想求解初值 y(0) = 1 的方程，输入 0。",
-        "hints_enter_y": "在给定 x 处函数 y 的初值。例如，如果您想求解初值 y(0) = 1 的方程，输入 1。",
-        "hints_enter_y_multiple": "在给定 x 值处函数 y 的初值。例如，如果您想求解初值 y(0) = 1 和 y(1) = 2 的方程，输入 1, 2 或 1 2。",
-        "hints_enter_reach_point": "指定要解方程到的点。例如，如果您想解方程到 x = 10，输入 10。",
-        "hints_enter_step_size": "影响计算精度。例如：如果您希望步长为 0.1，输入 0.1。",
+        "hints": {
+            "enter_equation": "例如：y' = x + y 或 y'' + sin(x)。您可以使用变量 x 和 y，算术运算符（+、-、*、/），以及 sin(x)、exp(x)、ln(x) 等函数。",
+            "enter_x": "开始求解的点。例如，如果您想求解初值 y(0) = 1 的方程，输入 0。",
+            "enter_y": "在给定 x 处函数 y 的初值。例如，如果您想求解初值 y(0) = 1 的方程，输入 1。",
+            "enter_y_multiple": "在给定 x 值处函数 y 的初值。例如，如果您想求解初值 y(0) = 1 和 y(1) = 2 的方程，输入 1, 2 或 1 2。",
+            "enter_reach_point": "指定要解方程到的点。例如，如果您想解方程到 x = 10，输入 10。",
+            "enter_step_size": "影响计算精度。例如：如果您希望步长为 0.1，输入 0.1。"
+        },
 
         "equation_error": "方程不正确。",
         "symbols_error": "方程包含无效符号：",
