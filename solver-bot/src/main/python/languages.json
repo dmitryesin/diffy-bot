@@ -47,8 +47,6 @@
         "too_many_points": "Too many calculation points: ",
         "max_points_allowed": "Maximum allowed: ",
 
-        "processing": "Processing your request...",
-        "processing_longer": "It may take longer than usual to process your request. Please wait...",
         "processing_error": "Error processing your request.",
         "data_error": "The entered data is incorrect.",
         "server_error": "Server error.",
@@ -121,8 +119,6 @@
         "too_many_points": "Слишком много точек для вычисления: ",
         "max_points_allowed": "Максимально допустимо: ",
 
-        "processing": "Обработка вашего запроса...",
-        "processing_longer": "Обработка вашего запроса может занять больше времени, чем обычно. Пожалуйста, подождите...",
         "processing_error": "Ошибка при обработке вашего запроса.",
         "data_error": "Введенные данные некорректны.",
         "server_error": "Ошибка сервера.",
@@ -195,8 +191,6 @@
         "too_many_points": "计算点数过多：",
         "max_points_allowed": "最大允许：",
 
-        "processing": "正在处理您的请求...",
-        "processing_longer": "处理时间可能较长，请稍候...",
         "processing_error": "处理请求时出错。",
         "data_error": "输入数据不正确。",
         "server_error": "服务器错误。",
