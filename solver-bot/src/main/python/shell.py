@@ -822,9 +822,7 @@ async def solution(update: Update, context: ContextTypes.DEFAULT_TYPE):
     user = update.message.from_user
     current_language = context.user_data.get("language", DEFAULT_LANGUAGE)
 
-    processing_message = await update.message.reply_text(
-        LANG_TEXTS[current_language]["processing"]
-    )
+    processing_message = await update.message.reply_text("⏳")
 
     try:
         application_id = await set_parameters(
