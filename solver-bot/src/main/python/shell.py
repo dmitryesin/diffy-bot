@@ -535,16 +535,16 @@ async def solve_history_details(update: Update, context: ContextTypes.DEFAULT_TY
 
 
 async def send_localized_message(
-    update: Update, context: ContextTypes.DEFAULT_TYPE, key_without_hint, key_with_hint
+    update: Update, context: ContextTypes.DEFAULT_TYPE, key
 ):
     current_language = context.user_data.get("language", DEFAULT_LANGUAGE)
     current_hints = context.user_data.get("hints", DEFAULT_HINTS)
 
-    text = LANG_TEXTS[current_language].get(key_without_hint, "")
+    text = LANG_TEXTS[current_language].get(key, "")
 
     if current_hints == "true":
         text += f"<i>\n\n{LANG_TEXTS[current_language]['hints_text']}</i>"
-        text += f"<i> {LANG_TEXTS[current_language].get(key_with_hint, '')}</i>"
+        text += f"<i> {LANG_TEXTS[current_language]['hints'].get(key, '')}</i>"
 
     if update.message:
         await update.message.reply_text(text, parse_mode="HTML")
@@ -572,9 +572,7 @@ async def solve(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
     context.user_data["state"] = EQUATION
 
-    await send_localized_message(
-        update, context, "enter_equation", "hints_enter_equation"
-    )
+    await send_localized_message(update, context, "enter_equation")
 
     return EQUATION
 
@@ -627,7 +625,7 @@ async def equation(update: Update, context: ContextTypes.DEFAULT_TYPE):
     context.user_data["order"] = order
     context.user_data["state"] = INITIAL_X
 
-    await send_localized_message(update, context, "enter_x", "hints_enter_x")
+    await send_localized_message(update, context, "enter_x")
 
     return INITIAL_X
 
@@ -658,12 +656,10 @@ async def initial_x(update: Update, context: ContextTypes.DEFAULT_TYPE):
     context.user_data["state"] = INITIAL_Y
 
     if int(context.user_data["order"]) == 1:
-        await send_localized_message(update, context, "enter_y", "hints_enter_y")
+        await send_localized_message(update, context, "enter_y")
         return INITIAL_Y
     else:
-        await send_localized_message(
-            update, context, "enter_y_multiple", "hints_enter_y_multiple"
-        )
+        await send_localized_message(update, context, "enter_y_multiple")
 
     return INITIAL_Y
 
@@ -718,9 +714,7 @@ async def initial_y(update: Update, context: ContextTypes.DEFAULT_TYPE):
     context.user_data["initial_y"] = splitted_user_input
     context.user_data["state"] = REACH_POINT
 
-    await send_localized_message(
-        update, context, "enter_reach_point", "hints_enter_reach_point"
-    )
+    await send_localized_message(update, context, "enter_reach_point")
 
     return REACH_POINT
 
@@ -764,9 +758,7 @@ async def reach_point(update: Update, context: ContextTypes.DEFAULT_TYPE):
     context.user_data["reach_point"] = user_input
     context.user_data["state"] = STEP_SIZE
 
-    await send_localized_message(
-        update, context, "enter_step_size", "hints_enter_step_size"
-    )
+    await send_localized_message(update, context, "enter_step_size")
 
     return STEP_SIZE
 
