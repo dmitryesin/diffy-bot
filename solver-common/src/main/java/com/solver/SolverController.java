@@ -66,7 +66,7 @@ public class SolverController {
         return dbService.getUserSettings(userId)
                 .thenApply(optionalSettings -> optionalSettings
                     .map(ResponseEntity::ok)
-                    .orElseThrow(() -> new SolverException("User settings not found for userId: " + userId)));
+                    .orElseThrow(() -> new ResourceNotFoundException("User settings not found for userId: " + userId)));
     }
 
     @GetMapping("/users/{userId}/applications")
@@ -75,7 +75,7 @@ public class SolverController {
         return dbService.getApplications(userId)
                 .thenApply(applications -> {
                     if (applications.isEmpty()) {
-                        throw new SolverException("Applications not found for userId: " + userId);
+                        throw new ResourceNotFoundException("Applications not found for userId: " + userId);
                     }
                     return ResponseEntity.ok(applications);
                 });
@@ -86,13 +86,13 @@ public class SolverController {
         logger.debug("Getting application status for id: {}", applicationId);
         
         if (applicationId <= 0) {
-            throw new SolverException("Invalid applicationId: " + applicationId);
+            throw new ResourceNotFoundException("Invalid applicationId: " + applicationId);
         }
         
         return dbService.getApplicationStatus(applicationId)
                 .thenApply(optionalStatus -> optionalStatus
                     .map(ResponseEntity::ok)
-                    .orElseThrow(() -> new SolverException("Application status not found for applicationId: " + applicationId)));
+                    .orElseThrow(() -> new ResourceNotFoundException("Application not found for applicationId: " + applicationId)));
     }
 
     @GetMapping("/applications/{applicationId}/results")
@@ -100,13 +100,13 @@ public class SolverController {
         logger.debug("Getting results for applicationId: {}", applicationId);
         
         if (applicationId <= 0) {
-            throw new SolverException("Invalid applicationId: " + applicationId);
+            throw new ResourceNotFoundException("Invalid applicationId: " + applicationId);
         }
         
         return dbService.getResults(applicationId)
                 .thenApply(results -> {
                     if (results.isEmpty()) {
-                        throw new SolverException("Results not found for applicationId: " + applicationId);
+                        throw new ResourceNotFoundException("Results not found for applicationId: " + applicationId);
                     }
                     return ResponseEntity.ok(results);
                 });
