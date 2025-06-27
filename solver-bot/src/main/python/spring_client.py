@@ -79,7 +79,7 @@ async def get_user_settings(user_id, method, rounding, language, hints):
         async with session.get(
             f"{os.getenv('CLIENT_API_URL')}/users/{user_id}/settings"
         ) as response:
-            if response.status == 500:
+            if response.status == 404:
                 return {
                     "method": method,
                     "rounding": rounding,
@@ -102,7 +102,7 @@ async def get_recent_applications(user_id):
         async with session.get(
             f"{os.getenv('CLIENT_API_URL')}/users/{user_id}/applications"
         ) as response:
-            if response.status == 500:
+            if response.status == 404:
                 return []
 
             response.raise_for_status()
