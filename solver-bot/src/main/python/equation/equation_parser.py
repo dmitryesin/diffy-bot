@@ -3,6 +3,7 @@ import sympy as sp
 
 from equation.function_replacer import replace_math_functions
 
+
 def get_equation_order(eq):
     derivatives = list(eq.lhs.atoms(sp.Derivative))
     if not derivatives:
@@ -16,20 +17,20 @@ def convert_to_first_order(eq, y, x):
     if order == 0:
         return eq, order
 
-    y_vars = [sp.Symbol(f'y[{i}]') for i in range(order)]
+    y_vars = [sp.Symbol(f"y[{i}]") for i in range(order)]
     subs_dict = {y.diff(x, i): y_vars[i] for i in range(order)}
     subs_dict[y] = y_vars[0]
 
     last_derivative = y.diff(x, order)
     last_eq = sp.solve(eq, last_derivative)[0].subs(subs_dict)
-    last_equation = sp.Eq(sp.Symbol(f'y[{order - 1}]').diff(x), last_eq)
+    last_equation = sp.Eq(sp.Symbol(f"y[{order - 1}]").diff(x), last_eq)
 
     return last_equation, order
 
 
 def parse_equation(eq):
-    x = sp.Symbol('x')
-    y = sp.Function('y')(x)
+    x = sp.Symbol("x")
+    y = sp.Function("y")(x)
 
     eq = eq.replace(" ", "").replace("`", "'").replace("’", "'")
     eq = re.sub(r"y\^\((\d+)\)", lambda m: "y" + "'" * int(m.group(1)), eq)

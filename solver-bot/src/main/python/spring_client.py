@@ -1,4 +1,3 @@
-import numpy as np
 import asyncio
 import json
 import os
@@ -10,9 +9,17 @@ MAX_RETRIES = 3
 RETRY_DELAY = 1
 MAX_DELAY = 10
 
+
 async def set_parameters(
-    user_id, method, order, user_equation, formatted_equation,
-    initial_x, initial_y, reach_point, step_size
+    user_id,
+    method,
+    order,
+    user_equation,
+    formatted_equation,
+    initial_x,
+    initial_y,
+    reach_point,
+    step_size,
 ):
     method_mapping = {
         "euler": "euler",
@@ -30,7 +37,7 @@ async def set_parameters(
         "initialX": float(initial_x),
         "initialY": list(map(float, initial_y)),
         "reachPoint": float(reach_point),
-        "stepSize": float(step_size)
+        "stepSize": float(step_size),
     }
 
     for attempt in range(MAX_RETRIES):
@@ -38,8 +45,7 @@ async def set_parameters(
             timeout = ClientTimeout(total=REQUEST_TIMEOUT)
             async with ClientSession(timeout=timeout) as session:
                 async with session.post(
-                    f"{os.getenv('CLIENT_API_URL')}/solve/{user_id}",
-                    json=payload
+                    f"{os.getenv('CLIENT_API_URL')}/users/{user_id}/solve", json=payload
                 ) as response:
                     response.raise_for_status()
                     return await response.json()
@@ -55,14 +61,13 @@ async def set_user_settings(user_id, method, rounding, language, hints):
         "method": method,
         "rounding": rounding,
         "language": language,
-        "hints": hints
+        "hints": hints,
     }
 
     timeout = ClientTimeout(total=REQUEST_TIMEOUT)
     async with ClientSession(timeout=timeout) as session:
         async with session.post(
-            f"{os.getenv('CLIENT_API_URL')}/users/{user_id}",
-            params=payload
+            f"{os.getenv('CLIENT_API_URL')}/users/{user_id}/settings", params=payload
         ) as response:
             response.raise_for_status()
             return await response.text()
@@ -72,14 +77,14 @@ async def get_user_settings(user_id, method, rounding, language, hints):
     timeout = ClientTimeout(total=REQUEST_TIMEOUT)
     async with ClientSession(timeout=timeout) as session:
         async with session.get(
-            f"{os.getenv('CLIENT_API_URL')}/users/{user_id}"
+            f"{os.getenv('CLIENT_API_URL')}/users/{user_id}/settings"
         ) as response:
-            if response.status == 500:
+            if response.status == 404:
                 return {
-                    'method': method,
-                    'rounding': rounding,
-                    'language': language,
-                    'hints': hints
+                    "method": method,
+                    "rounding": rounding,
+                    "language": language,
+                    "hints": hints,
                 }
 
             response.raise_for_status()
@@ -95,9 +100,9 @@ async def get_recent_applications(user_id):
     timeout = ClientTimeout(total=REQUEST_TIMEOUT)
     async with ClientSession(timeout=timeout) as session:
         async with session.get(
-            f"{os.getenv('CLIENT_API_URL')}/applications/{user_id}"
+            f"{os.getenv('CLIENT_API_URL')}/users/{user_id}/applications"
         ) as response:
-            if response.status == 500:
+            if response.status == 404:
                 return []
 
             response.raise_for_status()
@@ -105,38 +110,15 @@ async def get_recent_applications(user_id):
             try:
                 data = json.loads(text)
             except json.JSONDecodeError:
-                return []
-
-            valid_statuses = {"new", "in_progress", "completed"}
-
-            filtered = []
-
-            if isinstance(data, list):
-                for app in data:
-                    if isinstance(app, dict) and app.get("status") in valid_statuses:
-                        filtered.append(app)
-                        if len(filtered) == 5:
-                            break
-                return filtered
-
-            elif isinstance(data, dict) and 'applications' in data:
-                applications = data['applications']
-                if isinstance(applications, list):
-                    for app in applications:
-                        if isinstance(app, dict) and app.get("status") in valid_statuses:
-                            filtered.append(app.get('id') if 'id' in app else app)
-                            if len(filtered) == 5:
-                                break
-                    return filtered
-
-            return []
+                return text
+            return data
 
 
 async def get_results(application_id):
     timeout = ClientTimeout(total=REQUEST_TIMEOUT)
     async with ClientSession(timeout=timeout) as session:
         async with session.get(
-            f"{os.getenv('CLIENT_API_URL')}/results/{application_id}"
+            f"{os.getenv('CLIENT_API_URL')}/applications/{application_id}/results"
         ) as response:
             response.raise_for_status()
             text = await response.text()

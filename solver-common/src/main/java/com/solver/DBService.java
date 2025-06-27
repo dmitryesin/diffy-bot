@@ -28,7 +28,7 @@ public class DBService {
 
     @Async
     @Transactional
-    public CompletableFuture<Optional<String>> getUserSettings(Integer userId) {
+    public CompletableFuture<Optional<String>> getUserSettings(Long userId) {
         logger.debug("Fetching user settings for userId: {}", userId);
         return CompletableFuture.supplyAsync(() -> {
             String query = """
@@ -40,7 +40,7 @@ public class DBService {
             try {
                 return jdbcTemplate.queryForObject(query, (rs, rowNum) -> {
                     String method = rs.getString("method");
-                    String rounding = rs.getString("rounding");
+                    Integer rounding = rs.getInt("rounding");
                     String language = rs.getString("language");
                     Boolean hints = rs.getBoolean("hints");
                     return Optional.of(
@@ -63,7 +63,7 @@ public class DBService {
 
     @Async
     @Transactional
-    public CompletableFuture<Optional<String>> setUserSettings(Integer userId, String method, String rounding, String language, Boolean hints) {
+    public CompletableFuture<Optional<String>> setUserSettings(Long userId, String method, Integer rounding, String language, Boolean hints) {
         logger.debug("Setting user settings for userId: {}, method: {}, rounding: {}, language: {}, hints: {}", 
             userId, method, rounding, language, hints);
         return CompletableFuture.supplyAsync(() -> {
@@ -91,7 +91,7 @@ public class DBService {
 
     @Async
     @Transactional
-    public CompletableFuture<Integer> createApplication(String parameters, String status, Integer userId) {
+    public CompletableFuture<Integer> createApplication(String parameters, String status, Long userId) {
         logger.debug("Creating new application for userId: {} with status: {}", userId, status);
         return CompletableFuture.supplyAsync(() -> {
             String query = """
@@ -116,14 +116,16 @@ public class DBService {
 
     @Async
     @Transactional
-    public CompletableFuture<List<Map<String, Object>>> getApplications(Integer userId) {
+    public CompletableFuture<List<Map<String, Object>>> getApplications(Long userId) {
         logger.debug("Fetching applications for userId: {}", userId);
         return CompletableFuture.supplyAsync(() -> {
             String query = """
                 SELECT id, parameters, status, created_at, last_updated_at
                 FROM applications
                 WHERE user_id = ?
+                AND status = 'completed'
                 ORDER BY created_at DESC
+                LIMIT 5
                 """;
             try {
                 return jdbcTemplate.query(query, (rs, rowNum) -> {
@@ -144,7 +146,7 @@ public class DBService {
 
     @Async
     @Transactional
-    public CompletableFuture<List<Map<String, Object>>> getResults(Integer applicationId) {
+    public CompletableFuture<List<Map<String, Object>>> getResults(int applicationId) {
         logger.debug("Fetching results for applicationId: {}", applicationId);
         return CompletableFuture.supplyAsync(() -> {
             String query = """
