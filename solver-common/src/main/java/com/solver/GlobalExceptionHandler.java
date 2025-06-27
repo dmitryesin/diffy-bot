@@ -12,6 +12,12 @@ import org.springframework.web.method.annotation.MethodArgumentTypeMismatchExcep
 public class GlobalExceptionHandler {
     private static final Logger logger = LoggerFactory.getLogger(GlobalExceptionHandler.class);
 
+    @ExceptionHandler(ResourceNotFoundException.class)
+    public ResponseEntity<String> handleResourceNotFoundException(ResourceNotFoundException e) {
+        logger.info("Resource not found: {}", e.getMessage());
+        return new ResponseEntity<>(e.getMessage(), HttpStatus.NOT_FOUND);
+    }
+
     @ExceptionHandler(SolverException.class)
     public ResponseEntity<String> handleSolverException(SolverException e) {
         logger.error("Solver error occurred", e);
