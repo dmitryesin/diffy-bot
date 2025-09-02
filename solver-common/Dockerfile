@@ -5,6 +5,8 @@ WORKDIR /solver-server
 COPY solver-common/build.gradle.kts solver-common/settings.gradle.kts solver-common/gradlew ./
 COPY solver-common/gradle ./gradle
 
+RUN chmod +x ./gradlew
+
 RUN ./gradlew dependencies --no-daemon || true
 
 COPY solver-common ./
