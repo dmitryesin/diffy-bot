@@ -1,22 +1,20 @@
-FROM openjdk:21-slim AS builder
+FROM gradle:8.14-jdk21 AS builder
 
 WORKDIR /solver-server
 
-RUN apt-get update && \
-    apt-get install -y --no-install-recommends maven && \
-    apt-get clean && \
-    rm -rf /var/lib/apt/lists/*
+COPY solver-common/build.gradle.kts solver-common/settings.gradle.kts solver-common/gradlew ./
+COPY solver-common/gradle ./gradle
 
-COPY solver-common/pom.xml .
-RUN mvn dependency:go-offline
+RUN ./gradlew dependencies --no-daemon || true
 
-COPY solver-common .
-RUN mvn clean package -DskipTests -B
+COPY solver-common ./
+
+RUN ./gradlew bootJar -x test --no-daemon
 
 FROM openjdk:21-slim
 
 WORKDIR /solver-server
 
-COPY --from=builder /solver-server/target/solver-0.1.2-alpha.jar /solver-server/solver-0.1.2-alpha.jar
+COPY --from=builder /solver-server/build/libs/*.jar app.jar
 
-CMD ["java", "-jar", "solver-0.1.2-alpha.jar"]
+CMD ["java", "-jar", "app.jar"]
