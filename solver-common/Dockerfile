@@ -1,22 +1,21 @@
 FROM gradle:8.14-jdk21 AS builder
 
-WORKDIR /solver-server
+WORKDIR /home/gradle/project
 
-COPY solver-common/build.gradle.kts solver-common/settings.gradle.kts solver-common/gradlew ./
-COPY solver-common/gradle ./gradle
+COPY --chown=gradle:gradle settings.gradle.kts settings.gradle.kts
+COPY --chown=gradle:gradle build.gradle.kts build.gradle.kts
+COPY --chown=gradle:gradle gradle gradle
 
-RUN chmod +x ./gradlew
+COPY --chown=gradle:gradle . .
 
-RUN ./gradlew dependencies --no-daemon || true
+RUN gradle --no-daemon clean bootJar -x test
 
-COPY solver-common ./
-
-RUN ./gradlew bootJar -x test --no-daemon
-
-FROM openjdk:21-slim
+FROM openjdk:21-ea-jdk-slim
 
 WORKDIR /solver-server
 
-COPY --from=builder /solver-server/build/libs/*.jar app.jar
+COPY --from=builder /home/gradle/project/build/libs/*.jar app.jar
+
+EXPOSE 8080
 
 CMD ["java", "-jar", "app.jar"]

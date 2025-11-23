@@ -21,8 +21,8 @@ services:
 
   server:
     build:
-      context: .
-      dockerfile: solver-common/Dockerfile
+      context: ./solver-common
+      dockerfile: Dockerfile
     container_name: diffy-bot-server
     working_dir: /solver-server
     env_file:
