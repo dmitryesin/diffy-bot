@@ -1,10 +1,10 @@
 import re
+
 import sympy as sp
+from src.equation.function_replacer import replace_math_functions
 
-from equation.function_replacer import replace_math_functions
 
-
-def get_equation_order(eq):
+def get_equation_order(eq: sp.Eq) -> int:
     derivatives = list(eq.lhs.atoms(sp.Derivative))
     if not derivatives:
         return 0
@@ -12,7 +12,7 @@ def get_equation_order(eq):
     return max(d.derivative_count for d in derivatives)
 
 
-def convert_to_first_order(eq, y, x):
+def convert_to_first_order(eq: sp.Eq, y: sp.Function, x: sp.Symbol):
     order = get_equation_order(eq)
     if order == 0:
         return eq, order
@@ -28,7 +28,7 @@ def convert_to_first_order(eq, y, x):
     return last_equation, order
 
 
-def parse_equation(eq):
+def parse_equation(eq: str):
     x = sp.Symbol("x")
     y = sp.Function("y")(x)
 
@@ -49,7 +49,7 @@ def parse_equation(eq):
     return sp.Eq(lhs_expr, rhs_expr), y, x
 
 
-def format_equation(eq):
+def format_equation(eq: str) -> tuple[str | None, int | None]:
     try:
         equation, y, x = parse_equation(eq.lower())
         last_equation, order = convert_to_first_order(equation, y, x)

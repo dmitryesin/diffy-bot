@@ -1,9 +1,14 @@
-FROM python:3.13.3-slim
+FROM python:3.13-slim AS base
 
-WORKDIR /solver-client
+WORKDIR /app
 
-COPY solver-bot .
+COPY pyproject.toml uv.lock ./
+COPY src ./src
 
-RUN pip install --no-cache-dir -r requirements.txt
+RUN pip install --no-cache-dir uv && uv pip install --no-cache-dir --system . \
+    && mkdir -p logs && chown -R 10001:10001 logs
 
-CMD ["python", "src/main/python/main.py"]
+RUN useradd --create-home --uid 10001 solver-bot
+USER solver-bot
+
+CMD ["solver-bot"]

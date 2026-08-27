@@ -1,16 +1,14 @@
-import re
 import json
-
+import re
 from pathlib import Path
 
-PY_DIR = Path(__file__).parent
-functions_path = PY_DIR / "functions.json"
+_FUNCTIONS_PATH = Path(__file__).parent / "functions.json"
 
-with open(functions_path, "r", encoding="utf-8") as f:
+with open(_FUNCTIONS_PATH, "r", encoding="utf-8") as f:
     MATH_FUNCTIONS = json.load(f)
 
 
-def validate_symbols(equation):
+def validate_symbols(equation: str) -> tuple[bool, str | None]:
     allowed_vars = {"x", "y", "X", "Y"}
     symbols = re.findall(r"[a-zA-Z]+|\d+|\S", equation)
     for symbol in symbols:
@@ -23,7 +21,7 @@ def validate_symbols(equation):
     return True, None
 
 
-def validate_parentheses(equation):
+def validate_parentheses(equation: str) -> bool:
     stack = []
     for i, char in enumerate(equation):
         if char == "(":
@@ -35,6 +33,4 @@ def validate_parentheses(equation):
             if start_index + 1 == i:
                 return False
 
-    if stack:
-        return False
-    return True
+    return not stack

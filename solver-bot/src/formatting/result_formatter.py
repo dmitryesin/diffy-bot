@@ -1,4 +1,4 @@
-def get_variable_name(i):
+def get_variable_name(i: int) -> str:
     superscripts = "⁰¹²³⁴⁵⁶⁷⁸⁹"
 
     if i == 0:
@@ -9,7 +9,7 @@ def get_variable_name(i):
         return "y⁽" + "".join(superscripts[int(d)] for d in str(i)) + "⁾"
 
 
-def print_solution(result, order, rounding):
+def print_solution(result, order: int, rounding) -> str:
     def format_value(value):
         formatted_value = f"{value:.{rounding}f}"
         if "." in formatted_value:
@@ -26,7 +26,7 @@ def print_solution(result, order, rounding):
 
     formatted_x = format_value(result[0])
     variables_str = ", ".join(
-        f"{name}: {val}" for name, val in zip(variable_names, values)
+        f"{name}: {val}" for name, val in zip(variable_names, values, strict=False)
     )
 
     return f"x: {formatted_x}, {variables_str}"

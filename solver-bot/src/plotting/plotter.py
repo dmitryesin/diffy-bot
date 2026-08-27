@@ -1,10 +1,10 @@
 import io
+
 import matplotlib.pyplot as plt
+from src.formatting.result_formatter import get_variable_name
 
-from printing.printer import get_variable_name
 
-
-def plot_solution(x_values, y_values, order):
+def plot_solution(x_values, y_values, order: int) -> io.BytesIO:
     plt.figure(figsize=(10, 6), dpi=200)
     plt.grid(True)
 

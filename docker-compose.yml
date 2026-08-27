@@ -1,42 +1,38 @@
 services:
-  client:
+  bot:
     build:
-      context: .
-      dockerfile: solver-bot/Dockerfile
-    container_name: diffy-bot-client
-    working_dir: /solver-client
+      context: ./solver-bot
+      dockerfile: Dockerfile
+    container_name: diffy-bot
     env_file:
       - .env
     environment:
-      - CLIENT_API_URL=http://server:8080/api/solver
-    ports:
-      - "8001:8000"
-    volumes:
-      - .env:/solver-client/.env
+      - SOLVER_API_URL=http://server:8080/api/solver
     depends_on:
-      - database
       - server
+      - database
     networks:
       - net
+    restart: unless-stopped
 
   server:
     build:
       context: ./solver-common
       dockerfile: Dockerfile
     container_name: diffy-bot-server
-    working_dir: /solver-server
     env_file:
       - .env
     environment:
       - DB_HOST=database
     ports:
-      - "8081:8080"
+      - "8080:8080"
     volumes:
-      - .env:/solver-server/.env
+      - .env:/solver-server/.env:ro
     depends_on:
       - database
     networks:
       - net
+    restart: unless-stopped
 
   database:
     image: postgres:17.5-alpine
