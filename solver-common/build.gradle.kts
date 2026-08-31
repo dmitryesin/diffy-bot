@@ -42,8 +42,9 @@ tasks.withType<Test> {
     useJUnitPlatform()
 }
 
-tasks.jar {
-    manifest {
-        attributes["Main-Class"] = "com.solver.Application"
-    }
+tasks.named<org.springframework.boot.gradle.tasks.bundling.BootJar>("bootJar") {
+    archiveFileName.set("app.jar")
+}
+tasks.named<Jar>("jar") {
+    enabled = false
 }
