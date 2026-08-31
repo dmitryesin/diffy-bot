@@ -1,20 +1,33 @@
-FROM gradle:8.14-jdk21 AS builder
+FROM eclipse-temurin:21-jdk AS builder
 
 WORKDIR /home/gradle/project
 
-COPY --chown=gradle:gradle settings.gradle.kts settings.gradle.kts
-COPY --chown=gradle:gradle build.gradle.kts build.gradle.kts
-COPY --chown=gradle:gradle gradle gradle
+COPY gradlew gradlew
+COPY gradle gradle
+COPY settings.gradle.kts build.gradle.kts ./
 
-COPY --chown=gradle:gradle . .
+RUN sed -i 's/\r$//' gradlew && chmod +x gradlew
 
-RUN gradle --no-daemon clean bootJar -x test
+RUN --mount=type=cache,target=/home/gradle/.gradle \
+    ./gradlew --no-daemon dependencies
 
-FROM openjdk:21-ea-jdk-slim
+COPY src src
+
+RUN --mount=type=cache,target=/home/gradle/.gradle \
+    ./gradlew --no-daemon clean bootJar -x test
+
+
+FROM eclipse-temurin:21-jre
+
+RUN useradd --create-home --uid 10001 solver-server
 
 WORKDIR /solver-server
 
-COPY --from=builder /home/gradle/project/build/libs/*.jar app.jar
+RUN mkdir -p logs && chown -R 10001:10001 logs
+
+COPY --from=builder --chown=10001:10001 /home/gradle/project/build/libs/app.jar app.jar
+
+USER solver-server
 
 EXPOSE 8080
 
