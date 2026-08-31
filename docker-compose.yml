@@ -9,8 +9,10 @@ services:
     environment:
       - SOLVER_API_URL=http://server:8080/api/solver
     depends_on:
-      - server
-      - database
+      server:
+        condition: service_healthy
+      database:
+        condition: service_healthy
     networks:
       - net
     restart: unless-stopped
@@ -29,7 +31,14 @@ services:
     volumes:
       - .env:/solver-server/.env:ro
     depends_on:
-      - database
+      database:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD-SHELL", "bash -c '</dev/tcp/localhost/8080' || exit 1"]
+      interval: 5s
+      timeout: 3s
+      retries: 15
+      start_period: 20s
     networks:
       - net
     restart: unless-stopped
@@ -42,12 +51,18 @@ services:
       POSTGRES_PASSWORD: ${DB_PASSWORD}
       POSTGRES_DB: ${DB_DATABASE}
     ports:
-      - "5433:5432"
+      - "127.0.0.1:5433:5432"
     volumes:
       - pgdata:/var/lib/postgresql/data
       - ./database/schema.sql:/docker-entrypoint-initdb.d/init.sql:ro
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${DB_USERNAME} -d ${DB_DATABASE}"]
+      interval: 5s
+      timeout: 3s
+      retries: 10
     networks:
       - net
+    restart: unless-stopped
 
 volumes:
   pgdata:
