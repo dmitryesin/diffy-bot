@@ -1,0 +1,10 @@
+.git
+.idea
+.gradle
+build/
+out/
+*.md
+*.log
+.env
+.env.*
+!.env.example
