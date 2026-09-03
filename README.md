@@ -25,10 +25,10 @@ The project consists of three services:
 | Service | Role | Stack |
 |---|---|---|
 | **solver-bot** | Telegram interface: dialogs, equation parsing/validation, plotting | Python, `python-telegram-bot`, `sympy`, `matplotlib` |
-| **solver-common** | REST API: numerical methods, storage of requests and results | Java, Spring Boot, Spring Data JPA |
+| **solver-common** | REST API: numerical methods, storage of requests and results | Java, Spring Boot, Spring JDBC |
 | **database** | Stores users, requests (`applications`), and results (`results`) | PostgreSQL |
 
-The bot talks to the server over HTTP, and the server talks to the database via JPA — all three services come up with a single `docker compose up`.
+The bot talks to the server over HTTP, and the server talks to the database via `JdbcTemplate` (plain SQL, no ORM) — all three services come up with a single `docker compose up`.
 
 ## Features
 
@@ -42,19 +42,21 @@ The bot talks to the server over HTTP, and the server talks to the database via 
 ## Architecture
 
 ```
-Telegram ⇄ solver-bot (Python) ⇄ HTTP ⇄ solver-common (Spring Boot) ⇄ JPA ⇄ PostgreSQL
+Telegram ⇄ solver-bot (Python) ⇄ HTTP ⇄ solver-common (Spring Boot) ⇄ JDBC ⇄ PostgreSQL
 ```
+
+### API contract
 
 Server REST API (`/api/solver`):
 
-| Method | Path | Purpose |
-|---|---|---|
-| `POST` | `/users/{userId}/solve` | Submit an equation for solving |
-| `POST` | `/users/{userId}/settings` | Save user settings |
-| `GET`  | `/users/{userId}/settings` | Get user settings |
-| `GET`  | `/users/{userId}/applications` | List a user's requests |
-| `GET`  | `/applications/{applicationId}/status` | Get request status |
-| `GET`  | `/applications/{applicationId}/results` | Get results for a request |
+| Method | Path | Purpose | Body / params |
+|---|---|---|---|
+| `POST` | `/users/{userId}/solve` | Submit an equation for solving | JSON body (`SolverRequest`) |
+| `POST` | `/users/{userId}/settings` | Save user settings | Query params: `method`, `rounding`, `language`, `hints` |
+| `GET`  | `/users/{userId}/settings` | Get user settings | JSON body (all string fields) |
+| `GET`  | `/users/{userId}/applications` | List a user's requests | JSON array |
+| `GET`  | `/applications/{applicationId}/status` | Get request status | Plain text (`new` / `in_progress` / `completed` / `error`) |
+| `GET`  | `/applications/{applicationId}/results` | Get results for a request | JSON array |
 
 ## Quick Start
 
@@ -86,25 +88,34 @@ Server REST API (`/api/solver`):
 
 ```
 diffy-bot/
-├── solver-bot/          # Telegram bot in Python
-│   └── src/main/python/
-│       ├── equation/     # Equation parsing and validation
-│       ├── plotting/     # Graph generation
-│       ├── printing/     # Response formatting
-│       ├── assets/texts/ # Localized texts
-│       └── main.py       # Entry point
-├── solver-common/       # REST server in Spring Boot
+├── solver-bot/             # Telegram bot in Python
+│   └── src/
+│       ├── telegram_bot/   # Handlers, keyboards, conversation states
+│       ├── solver_client/  # HTTP client for solver-common's REST API
+│       ├── equation/       # Equation parsing and validation
+│       ├── plotting/       # Graph generation
+│       ├── formatting/     # Response formatting
+│       ├── i18n/           # Localized texts
+│       └── config.py       # Bot configuration / defaults
+├── solver-common/          # REST server in Spring Boot
 │   └── src/main/java/com/solver/
+│       ├── web/            # REST controllers + GlobalExceptionHandler (ProblemDetail)
+│       ├── service/        # Orchestration: SolverService, ApplicationProcessingService
+│       ├── numeric/        # ODE-solving math — framework-free, unit-testable
+│       ├── persistence/    # JdbcTemplate repositories (applications, results, settings)
+│       ├── dto/            # Immutable records exchanged between layers and over HTTP
+│       ├── exception/      # Application-specific exceptions
+│       └── config/         # Spring configuration + externalized properties (solver.*)
 ├── database/
-│   └── schema.sql        # PostgreSQL schema (users, applications, results)
-├── docs/images/           # Documentation assets
+│   └── schema.sql          # PostgreSQL schema (users, applications, results)
+├── docs/images/            # Documentation assets
 └── docker-compose.yml
 ```
 
 ## Tech Stack
 
 **Bot:** Python 3.13 · python-telegram-bot · SymPy · NumPy · Matplotlib · aiohttp
-**Server:** Java · Spring Boot · Spring Data JPA
+**Server:** Java 21 · Spring Boot · Spring JDBC (`JdbcTemplate`) · Bean Validation · virtual threads
 **Database:** PostgreSQL 17
 **Infra:** Docker, Docker Compose
 
