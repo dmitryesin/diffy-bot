@@ -5,11 +5,11 @@ spring:
     password: ${DB_PASSWORD}
     driver-class-name: org.postgresql.Driver
 
-  jpa:
-    open-in-view: false
-    show-sql: true
-    hibernate:
-      ddl-auto: validate
-    properties:
-      hibernate:
-        session.events.log.LOG_QUERIES_SLOWER_THAN_MS: 200
+  threads:
+    virtual:
+      enabled: true
+
+solver:
+  max-integration-steps: 1000000
+  max-stored-applications-per-user: 5
+  application-retention-days: 14

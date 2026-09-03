@@ -1,4 +1,4 @@
-package com.solver;
+package com.solver.exception;
 
 public class NotFoundException extends RuntimeException {
     public NotFoundException(String message) {

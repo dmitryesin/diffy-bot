@@ -1,4 +1,4 @@
-package com.solver;
+package com.solver.exception;
 
 public class SolverException extends RuntimeException {
     public SolverException(String message) {

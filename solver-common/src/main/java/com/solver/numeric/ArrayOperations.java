@@ -1,6 +1,10 @@
-package com.solver;
+package com.solver.numeric;
 
-public class ArrayOperations {
+public final class ArrayOperations {
+
+    private ArrayOperations() {
+    }
+
     public static double[] multiply(double scalar, double[] array) {
         double[] result = new double[array.length];
         for (int i = 0; i < array.length; i++) {
