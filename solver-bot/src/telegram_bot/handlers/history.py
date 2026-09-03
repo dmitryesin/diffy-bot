@@ -112,8 +112,8 @@ async def solve_history_details(update: Update, context: ContextTypes.DEFAULT_TY
         step_size = parameters.get("stepSize", "")
 
         data = json.loads(results[0].get("data", "{}"))
-        x_values = data.get("xvalues", [])
-        y_values = data.get("yvalues", [])
+        x_values = data.get("xValues", [])
+        y_values = data.get("yValues", [])
         solution = data.get("solution", "")
 
         plot_graph = plot_solution(x_values, y_values, order)

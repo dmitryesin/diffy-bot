@@ -369,11 +369,11 @@ async def solution_completion_handle(
 
         data = json.loads(results[0].get("data", "{}"))
 
-        x_values = data.get("xvalues", [])
-        y_values = data.get("yvalues", [])
+        x_values = data.get("xValues", [])
+        y_values = data.get("yValues", [])
         solution_value = data.get("solution", "")
 
-        if not solution_value:
+        if not solution_value or not x_values or not y_values:
             await message.edit_text(
                 deps.lang_texts[lang]["data_error"] + " " + deps.lang_texts[lang]["try_again"],
                 reply_markup=solution_markup(lang, deps.lang_texts),

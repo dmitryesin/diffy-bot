@@ -5,6 +5,9 @@ from src.formatting.result_formatter import get_variable_name
 
 
 def plot_solution(x_values, y_values, order: int) -> io.BytesIO:
+    if not x_values or not y_values:
+        raise ValueError("Cannot plot an empty solution (no x/y values)")
+
     plt.figure(figsize=(10, 6), dpi=200)
     plt.grid(True)
 
