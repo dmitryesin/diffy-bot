@@ -3,9 +3,11 @@ import re
 import sympy as sp
 from src.equation.function_replacer import replace_math_functions
 
+MAX_EQUATION_ORDER = 12
+
 
 def get_equation_order(eq: sp.Eq) -> int:
-    derivatives = list(eq.lhs.atoms(sp.Derivative))
+    derivatives = list(eq.lhs.atoms(sp.Derivative) | eq.rhs.atoms(sp.Derivative))
     if not derivatives:
         return 0
 

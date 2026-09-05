@@ -37,6 +37,7 @@
         },
 
         "equation_error": "The equation is incorrect.",
+        "equation_order_limit": "The equation order cannot exceed 12.",
         "symbols_error": "The equation contains invalid symbols: ",
         "parentheses_error": "The equation contains unbalanced parentheses, or there is nothing in them.",
         "invalid_initial_x": "Invalid initial x value.",
@@ -111,6 +112,7 @@
         },
 
         "equation_error": "Уравнение некорректно.",
+        "equation_order_limit": "Вы ввели уравнение больше 12 порядка.",
         "symbols_error": "Уравнение содержит недопустимые символы: ",
         "parentheses_error": "Уравнение содержит не сбалансированные скобки, либо в них ничего нет.",
         "invalid_initial_x": "Некорректное начальное значение x.",
@@ -185,6 +187,7 @@
         },
 
         "equation_error": "方程不正确。",
+        "equation_order_limit": "方程的阶数不能超过 12。",
         "symbols_error": "方程包含无效符号：",
         "parentheses_error": "方程括号未闭合或括号内无内容。",
         "invalid_initial_x": "无效的x初始值。",

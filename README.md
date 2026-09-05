@@ -18,7 +18,7 @@
 
 ## About
 
-Diffy Bot accepts an ordinary differential equation of arbitrary order directly in a Telegram chat, parses it, solves it using one of five numerical methods, and returns the result as a graph plus a text summary. Solution history is saved, so any past computation can be revisited later.
+Diffy Bot accepts an ordinary differential equation of up to 12th order directly in a Telegram chat, parses it, solves it using one of five numerical methods, and returns the result as a graph plus a text summary. Solution history is saved, so any past computation can be revisited later.
 
 The project consists of three services:
 
@@ -32,7 +32,7 @@ The bot talks to the server over HTTP, and the server talks to the database via 
 
 ## Features
 
-- **Equation solving** — first-order and higher-order ODEs with user-defined initial conditions.
+- **Equation solving** — first-order and higher-order ODEs (up to 12th order) with user-defined initial conditions.
 - **Numerical methods** — choose from Euler's Method, Midpoint Method, Heun's Method, Runge-Kutta Method, and Dormand-Prince Method.
 - **Visualization** — automatic plotting of the solution and its derivatives.
 - **Solution history** — every request and result is stored in PostgreSQL and available via the "History" menu.

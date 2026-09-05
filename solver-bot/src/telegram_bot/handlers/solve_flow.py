@@ -4,7 +4,7 @@ import asyncio
 import json
 
 import telegram
-from src.equation.parser import format_equation
+from src.equation.parser import MAX_EQUATION_ORDER, format_equation
 from src.equation.validator import validate_parentheses, validate_symbols
 from src.formatting.result_formatter import print_solution
 from src.logging_config import logger
@@ -101,6 +101,20 @@ async def equation(update: Update, context: ContextTypes.DEFAULT_TYPE):
         logger.info("User %s used unsupported symbols", user.id)
         await update.message.reply_text(
             deps.lang_texts[current_language]["equation_error"]
+            + " "
+            + deps.lang_texts[current_language]["try_again"]
+        )
+        return ConversationState.EQUATION
+
+    if order > MAX_EQUATION_ORDER:
+        logger.info(
+            "User %s entered an equation of order %s (maximum: %s)",
+            user.id,
+            order,
+            MAX_EQUATION_ORDER,
+        )
+        await update.message.reply_text(
+            deps.lang_texts[current_language]["equation_order_limit"]
             + " "
             + deps.lang_texts[current_language]["try_again"]
         )
