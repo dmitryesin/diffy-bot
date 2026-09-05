@@ -20,6 +20,9 @@ _METHOD_MAPPING = {
 }
 
 
+_API_KEY_HEADER = "X-Internal-Api-Key"
+
+
 class SolverClient:
     def __init__(self, settings: Settings) -> None:
         self._base_url = settings.solver_api_url.rstrip("/")
@@ -27,10 +30,14 @@ class SolverClient:
         self._max_retries = settings.max_retries
         self._retry_delay = settings.retry_delay
         self._max_retry_delay = settings.max_retry_delay
+        self._api_key = settings.solver_internal_api_key
         self._session: ClientSession | None = None
 
     async def start(self) -> None:
-        self._session = ClientSession(timeout=ClientTimeout(total=self._request_timeout))
+        self._session = ClientSession(
+            timeout=ClientTimeout(total=self._request_timeout),
+            headers={_API_KEY_HEADER: self._api_key},
+        )
 
     async def close(self) -> None:
         if self._session is not None:

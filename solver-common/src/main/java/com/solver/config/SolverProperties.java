@@ -7,6 +7,7 @@ import org.springframework.boot.context.properties.bind.DefaultValue;
 public record SolverProperties(
         @DefaultValue("1000000") long maxIntegrationSteps,
         @DefaultValue("5") int maxStoredApplicationsPerUser,
-        @DefaultValue("14") int applicationRetentionDays
+        @DefaultValue("14") int applicationRetentionDays,
+        String internalApiKey
 ) {
 }

@@ -8,6 +8,7 @@ from pydantic_settings import BaseSettings, SettingsConfigDict
 class Settings(BaseSettings):
     telegram_bot_token: str
     solver_api_url: str
+    solver_internal_api_key: str
 
     request_timeout: float = 60.0
     max_retries: int = 3

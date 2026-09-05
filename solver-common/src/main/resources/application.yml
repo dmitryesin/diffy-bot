@@ -13,3 +13,4 @@ solver:
   max-integration-steps: 1000000
   max-stored-applications-per-user: 5
   application-retention-days: 14
+  internal-api-key: ${SOLVER_INTERNAL_API_KEY:}

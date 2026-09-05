@@ -71,7 +71,13 @@ Server REST API (`/api/solver`):
 
 2. Create a `.env` file in the project root using `.env.example`
 
-3. Bring up all services:
+3. Generate a value for `SOLVER_INTERNAL_API_KEY` in `.env`:
+
+   ```bash
+   openssl rand -hex 32
+   ```
+
+4. Bring up all services:
 
    ```bash
    docker compose up --build
@@ -82,7 +88,7 @@ Server REST API (`/api/solver`):
    - The server API is available at `http://localhost:8081/api/solver`;
    - PostgreSQL is exposed on `localhost:5433`.
 
-4. Message the bot with `/start` and use the menu — **Solve** to solve an equation, **Settings** to change settings, **Solution History** to browse past results.
+5. Message the bot with `/start` and use the menu — **Solve** to solve an equation, **Settings** to change settings, **Solution History** to browse past results.
 
 ## Project Structure
 
