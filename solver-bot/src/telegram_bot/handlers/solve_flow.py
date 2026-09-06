@@ -17,6 +17,9 @@ from src.telegram_bot.states import ConversationState
 from telegram import InputMediaPhoto, Update
 from telegram.ext import ContextTypes
 
+MAX_EQUATION_LENGTH = 20_000
+EQUATION_FORMAT_TIMEOUT_SECONDS = 30
+
 
 async def send_localized_message(
     update: Update, context: ContextTypes.DEFAULT_TYPE, key: str
@@ -76,6 +79,20 @@ async def equation(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
     current_language = context.user_data.get("language", deps.settings.default_language)
 
+    if len(update.message.text) > MAX_EQUATION_LENGTH:
+        logger.info(
+            "User %s entered an equation of length %s (maximum: %s)",
+            user.id,
+            len(update.message.text),
+            MAX_EQUATION_LENGTH,
+        )
+        await update.message.reply_text(
+            deps.lang_texts[current_language]["equation_length_limit"]
+            + " "
+            + deps.lang_texts[current_language]["try_again"]
+        )
+        return ConversationState.EQUATION
+
     is_valid_symbols, error_message = validate_symbols(update.message.text)
     if not is_valid_symbols:
         logger.info("User %s used unsupported symbol: %s", user.id, error_message)
@@ -95,7 +112,23 @@ async def equation(update: Update, context: ContextTypes.DEFAULT_TYPE):
         )
         return ConversationState.EQUATION
 
-    formatted_equation, order = format_equation(update.message.text)
+    try:
+        formatted_equation, order = await asyncio.wait_for(
+            asyncio.to_thread(format_equation, update.message.text),
+            timeout=EQUATION_FORMAT_TIMEOUT_SECONDS,
+        )
+    except TimeoutError:
+        logger.info(
+            "Formatting equation of user %s exceeded the %s-second timeout",
+            user.id,
+            EQUATION_FORMAT_TIMEOUT_SECONDS,
+        )
+        await update.message.reply_text(
+            deps.lang_texts[current_language]["equation_timeout"]
+            + " "
+            + deps.lang_texts[current_language]["try_again"]
+        )
+        return ConversationState.EQUATION
 
     if formatted_equation is None or order is None or order == 0:
         logger.info("User %s used unsupported symbols", user.id)

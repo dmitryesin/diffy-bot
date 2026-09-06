@@ -37,6 +37,8 @@
         },
 
         "equation_error": "The equation is incorrect.",
+        "equation_length_limit": "The equation is too long. The maximum length is 20,000 characters.",
+        "equation_timeout": "The equation takes too long to process. Please simplify it.",
         "equation_order_limit": "The equation order cannot exceed 12.",
         "symbols_error": "The equation contains invalid symbols: ",
         "parentheses_error": "The equation contains unbalanced parentheses, or there is nothing in them.",
@@ -112,6 +114,8 @@
         },
 
         "equation_error": "Уравнение некорректно.",
+        "equation_length_limit": "Уравнение слишком длинное. Максимальная длина — 20 000 символов.",
+        "equation_timeout": "Обработка уравнения занимает слишком много времени. Упростите его.",
         "equation_order_limit": "Вы ввели уравнение больше 12 порядка.",
         "symbols_error": "Уравнение содержит недопустимые символы: ",
         "parentheses_error": "Уравнение содержит не сбалансированные скобки, либо в них ничего нет.",
@@ -187,6 +191,8 @@
         },
 
         "equation_error": "方程不正确。",
+        "equation_length_limit": "方程过长。最大长度为 20,000 个字符。",
+        "equation_timeout": "处理方程耗时过长。请将其简化。",
         "equation_order_limit": "方程的阶数不能超过 12。",
         "symbols_error": "方程包含无效符号：",
         "parentheses_error": "方程括号未闭合或括号内无内容。",
