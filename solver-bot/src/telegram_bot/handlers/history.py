@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import json
+from html import escape
 
 import telegram
 from src.formatting.result_formatter import print_solution
@@ -126,14 +127,14 @@ async def solve_history_details(update: Update, context: ContextTypes.DEFAULT_TY
         )
 
         details_text = (
-            f"<b>{deps.lang_texts[current_language]['method']}:</b> {method_display}\n"
-            f"<b>{deps.lang_texts[current_language]['equation']}:</b> {user_equation}\n"
-            f"<b>{deps.lang_texts[current_language]['initial_x']}:</b> {initial_x}\n"
-            f"<b>{deps.lang_texts[current_language]['initial_y']}:</b> {initial_y_str}\n"
-            f"<b>{deps.lang_texts[current_language]['reach_point']}:</b> {reach_point}\n"
-            f"<b>{deps.lang_texts[current_language]['step_size']}:</b> {step_size}\n\n"
+            f"<b>{deps.lang_texts[current_language]['method']}:</b> {escape(str(method_display))}\n"
+            f"<b>{deps.lang_texts[current_language]['equation']}:</b> {escape(str(user_equation))}\n"
+            f"<b>{deps.lang_texts[current_language]['initial_x']}:</b> {escape(str(initial_x))}\n"
+            f"<b>{deps.lang_texts[current_language]['initial_y']}:</b> {escape(initial_y_str)}\n"
+            f"<b>{deps.lang_texts[current_language]['reach_point']}:</b> {escape(str(reach_point))}\n"
+            f"<b>{deps.lang_texts[current_language]['step_size']}:</b> {escape(str(step_size))}\n\n"
             f"<b>{deps.lang_texts[current_language]['solution']}:</b>\n"
-            f"{print_solution(solution, order, current_rounding)}"
+            f"{escape(print_solution(solution, order, current_rounding))}"
         )
 
         keyboard = [
@@ -160,7 +161,9 @@ async def solve_history_details(update: Update, context: ContextTypes.DEFAULT_TY
                 update.effective_user.id,
             )
             await query.edit_message_text(
-                details_text, reply_markup=InlineKeyboardMarkup(keyboard)
+                details_text,
+                reply_markup=InlineKeyboardMarkup(keyboard),
+                parse_mode="HTML",
             )
         finally:
             plot_graph.close()
