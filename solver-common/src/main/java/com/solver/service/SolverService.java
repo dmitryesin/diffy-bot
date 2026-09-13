@@ -92,7 +92,7 @@ public class SolverService {
             throw new IllegalArgumentException("reachPoint must be greater than initialX");
         }
 
-        long steps = (long) Math.ceil((request.reachPoint() - request.initialX()) / request.stepSize()) + 1;
+        long steps = (long) Math.ceil((request.reachPoint() - request.initialX()) / request.stepSize());
         if (steps > properties.maxIntegrationSteps()) {
             throw new IllegalArgumentException(
                     "Requested range/stepSize would require too many steps (" + steps + ")");
