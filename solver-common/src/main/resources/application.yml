@@ -9,6 +9,12 @@ spring:
     virtual:
       enabled: true
 
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health
+
 solver:
   max-integration-steps: 100000
   max-concurrent-solves: 4
