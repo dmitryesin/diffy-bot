@@ -1,39 +1,129 @@
-<h1 align="center"> Diffy Bot: Differential Equation Solver </h1>
+<div align="center">
 
-<img src="docs/images/preview.png" class="center">
+# Diffy Bot
 
-<p align="center"> <em> A powerful Telegram bot designed for solving differential equations using advanced numerical methods. </em> </p>
+**A Telegram bot for numerically solving differential equations**
+
+</div>
+
+<p align="center">
+  <img src="docs/images/preview.png" alt="Diffy Bot demo: entering an equation, plotting the graph, and returning the solution" width="900">
+</p>
+
+<p align="center">
+  <em>The user provides an equation and initial conditions — the bot computes the solution using the chosen numerical method and sends back a graph along with a table of values.</em>
+</p>
+
+---
+
+## About
+
+Diffy Bot accepts an ordinary differential equation of up to 12th order directly in a Telegram chat, parses it, solves it using one of five numerical methods, and returns the result as a graph plus a text summary. Solution history is saved, so any past computation can be revisited later.
+
+The project consists of three services:
+
+| Service | Role | Stack |
+|---|---|---|
+| **solver-bot** | Telegram interface: dialogs, equation parsing/validation, plotting | Python, `python-telegram-bot`, `sympy`, `matplotlib` |
+| **solver-common** | REST API: numerical methods, storage of requests and results | Java, Spring Boot, Spring JDBC |
+| **database** | Stores users, requests (`applications`), and results (`results`) | PostgreSQL |
+
+The bot talks to the server over HTTP, and the server talks to the database via `JdbcTemplate` (plain SQL, no ORM) — all three services come up with a single `docker compose up`.
 
 ## Features
 
-- **Equation Solving**  
-  Capable of solving first-order and higher-order ordinary differential equations (ODEs).  
-  The bot accepts user-defined equations and initial conditions, automatically parsing and preparing them for numerical analysis.
+- **Equation solving** — first-order and higher-order ODEs (up to 12th order) with user-defined initial conditions.
+- **Numerical methods** — choose from Euler's Method, Midpoint Method, Heun's Method, Runge-Kutta Method, and Dormand-Prince Method.
+- **Visualization** — automatic plotting of the solution and its derivatives.
+- **Solution history** — every request and result is stored in PostgreSQL and available via the "History" menu.
+- **Multilingual support** — interface available in English, Russian, and Chinese (`en`, `ru`, `zh`).
+- **User settings** — numerical method, rounding precision, interface language, and hints toggle.
 
-- **Numerical Methods**  
-  Implements a range of well-established numerical methods to approximate solutions with varying degrees of accuracy and computational efficiency:
-  - Euler's Method;
-  - Midpoint Method;
-  - Heun's Method;
-  - Runge-Kutta Method;
-  - Dormand-Prince Method.
+## Architecture
 
-- **Visualization**  
-  Automatically generates clear and informative plots of the computed solutions.  
-  These visualizations help users interpret the behavior of differential systems over time.
+```
+Telegram ⇄ solver-bot (Python) ⇄ HTTP ⇄ solver-common (Spring Boot) ⇄ JDBC ⇄ PostgreSQL
+```
 
-- **History Tracking**  
-  Maintains a record of previously solved equations and their corresponding results, enabling users to revisit and review past computations.
+### API contract
 
-- **Multilingual Support**  
-  Offers interaction in multiple languages, enhancing accessibility and usability for users from diverse linguistic backgrounds.
+Server REST API (`/api/solver`):
 
-- **Customizable Settings**  
-  Provides a flexible interface for tailoring computational and interaction parameters to user preferences:
-  - **Numerical Method** – Choose from a list of supported methods (e.g., Euler, Runge-Kutta, Dormand-Prince).  
-  - **Precision Control** – Set the number of decimal places to which numerical results are rounded.  
-  - **Language Selection** – Choose the interface language for all commands and responses.  
-  - **Hints Toggle** – Enable or disable contextual tips and usage hints to streamline the interface.
+| Method | Path | Purpose | Body / params |
+|---|---|---|---|
+| `POST` | `/users/{userId}/solve` | Submit an equation for solving | JSON body (`SolverRequest`) |
+| `POST` | `/users/{userId}/settings` | Save user settings | Query params: `method`, `rounding`, `language`, `hints` |
+| `GET`  | `/users/{userId}/settings` | Get user settings | JSON body (all string fields) |
+| `GET`  | `/users/{userId}/applications` | List a user's requests | JSON array |
+| `GET`  | `/applications/{applicationId}/status` | Get request status | Plain text (`new` / `in_progress` / `completed` / `error`) |
+| `GET`  | `/applications/{applicationId}/results` | Get results for a request | JSON array |
+
+## Quick Start
+
+### Requirements
+
+- Docker
+- A Telegram bot token
+
+### Run it
+
+1. Clone the repository
+
+2. Create a `.env` file in the project root using `.env.example`
+
+3. Generate a value for `SOLVER_INTERNAL_API_KEY` in `.env`:
+
+   ```bash
+   openssl rand -hex 32
+   ```
+
+4. Bring up all services:
+
+   ```bash
+   docker compose up --build
+   ```
+
+   Once running:
+   - The bot responds on Telegram using the provided token;
+   - The server API is available at `http://localhost:8081/api/solver`;
+   - PostgreSQL is exposed on `localhost:5433`.
+
+5. Message the bot with `/start` and use the menu — **Solve** to solve an equation, **Settings** to change settings, **Solution History** to browse past results.
+
+## Project Structure
+
+```
+diffy-bot/
+├── solver-bot/             # Telegram bot in Python
+│   └── src/
+│       ├── telegram_bot/   # Handlers, keyboards, conversation states
+│       ├── solver_client/  # HTTP client for solver-common's REST API
+│       ├── equation/       # Equation parsing and validation
+│       ├── plotting/       # Graph generation
+│       ├── formatting/     # Response formatting
+│       ├── i18n/           # Localized texts
+│       └── config.py       # Bot configuration / defaults
+├── solver-common/          # REST server in Spring Boot
+│   └── src/main/java/com/solver/
+│       ├── web/            # REST controllers + GlobalExceptionHandler (ProblemDetail)
+│       ├── service/        # Orchestration: SolverService, ApplicationProcessingService
+│       ├── numeric/        # ODE-solving math — framework-free, unit-testable
+│       ├── persistence/    # JdbcTemplate repositories (applications, results, settings)
+│       ├── dto/            # Immutable records exchanged between layers and over HTTP
+│       ├── exception/      # Application-specific exceptions
+│       └── config/         # Spring configuration + externalized properties (solver.*)
+├── database/
+│   └── schema.sql          # PostgreSQL schema (users, applications, results)
+├── docs/images/            # Documentation assets
+└── docker-compose.yml
+```
+
+## Tech Stack
+
+**Bot:** Python 3.13 · python-telegram-bot · SymPy · NumPy · Matplotlib · aiohttp
+**Server:** Java 21 · Spring Boot · Spring JDBC (`JdbcTemplate`) · Bean Validation · virtual threads
+**Database:** PostgreSQL 17
+**Infra:** Docker, Docker Compose
 
 ## License
 

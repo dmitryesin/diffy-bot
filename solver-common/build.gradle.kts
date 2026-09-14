@@ -5,7 +5,7 @@ plugins {
 }
 
 group = "com.solver"
-version = "0.1.2-alpha"
+version = "1.0.0"
 
 java {
     toolchain {
@@ -30,8 +30,9 @@ dependencies {
     // Spring Boot starters
     implementation("org.springframework.boot:spring-boot-starter")
     implementation("org.springframework.boot:spring-boot-starter-actuator")
-    implementation("org.springframework.boot:spring-boot-starter-data-jpa")
+    implementation("org.springframework.boot:spring-boot-starter-jdbc")
     implementation("org.springframework.boot:spring-boot-starter-web")
+    implementation("org.springframework.boot:spring-boot-starter-validation")
 }
 
 tasks.withType<JavaCompile> {
@@ -42,8 +43,9 @@ tasks.withType<Test> {
     useJUnitPlatform()
 }
 
-tasks.jar {
-    manifest {
-        attributes["Main-Class"] = "com.solver.Application"
-    }
+tasks.named<org.springframework.boot.gradle.tasks.bundling.BootJar>("bootJar") {
+    archiveFileName.set("app.jar")
+}
+tasks.named<Jar>("jar") {
+    enabled = false
 }
